@@ -1,3 +1,54 @@
+We found the original oscar has some problems that produces errors when doing inference. We changed a bit and this should be directly available for error-free inference. 
+
+The original repo: https://github.com/microsoft/Oscar
+
+To build Oscar:
+
+```sh
+# create a new environment
+conda create --name oscar python=3.7
+conda activate oscar
+
+# install pytorch1.2
+conda install pytorch==1.2.0 torchvision==0.4.0 cudatoolkit=10.0 -c pytorch
+
+export INSTALL_DIR=$PWD
+
+# install apex
+cd $INSTALL_DIR
+git clone https://github.com/NVIDIA/apex.git
+cd apex
+python setup.py install --cuda_ext --cpp_ext
+
+# install oscar
+cd Oscar
+git clone https://github.com/LuoweiZhou/coco-caption.git
+cd coco-caption
+./get_stanford_models.sh
+cd ..
+
+# install requirements
+pip install -r requirements.txt
+pip install pytorch_transformers
+python setup.py build develop
+unset INSTALL_DIR
+```
+
+To perform inference:
+```sh
+export TORCH_HOME=$(pwd) && export PYTHONPATH=$(pwd)
+MODEL_DIR=/path/to/model
+python oscar/run_captioning.py \
+--do_test \
+--do_eval \
+--data_dir /path/to/eval/data \
+--test_yaml test.yaml \
+--per_gpu_eval_batch_size 10 \
+--num_beams 5 \
+--max_gen_length 20 \
+--eval_model_dir $MODEL_DIR
+```
+
 # Oscar: Object-Semantics Aligned Pre-training for Vision-and-Language Tasks    <img src="docs/oscar_logo.png" width="200" align="right"> 
 # VinVL: Revisiting Visual Representations in Vision-Language Models  
 ## Updates
